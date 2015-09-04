@@ -1,14 +1,13 @@
 {
-  "name": "generator-joli-symfony",
-  "version": "1.0.0",
+  "name": "disko-symfony2",
+  "version": "1.0.1",
   "description": "Scaffolds a standard Symfony2 application with Yeoman",
   "license": "MIT",
   "main": "app/index.js",
   "repository": "woydadrien/disko-symfony2",
   "author": {
-    "name": "Laurent Brunet",
-    "email": "",
-    "url": "https://github.com/lbrunet"
+    "name": "Adrien Jerphagnon",
+    "email": ""
   },
   "engines": {
     "node": ">=0.10.0"
