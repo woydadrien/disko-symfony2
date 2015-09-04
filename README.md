@@ -7,6 +7,18 @@ Disko - Symfony2
 
 Avant toute chose, il est nécessaire que votre machine ait les outils nécessaire à l'installation de ce module.
 
+
+#### VirtualBox
+> Suivre le lien pour installer VB
+
+> [https://www.virtualbox.org/wiki/Downloads](https://www.virtualbox.org/wiki/Downloads)
+
+#### Vagrant
+
+> Suivre le lien pour installer vagrant
+
+> [http://www.vagrantup.com/downloads.html](http://www.vagrantup.com/downloads.html)
+
 #### NodeJS
 
 > Suivre le lien pour installer NodeJS et NPM
@@ -17,7 +29,7 @@ Avant toute chose, il est nécessaire que votre machine ait les outils nécessai
 
 > Installation des librairies de base sur votre mac
 
-> `npm install -g yo bower grunt-cli gulp`
+> `npm install -g yo gulp`
 
 #### Disko-Symfony2
 

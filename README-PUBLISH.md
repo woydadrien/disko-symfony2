@@ -13,6 +13,9 @@ Pour cela, il vous suffit de cloner le repo :
 
 Ensuite dans le dossier généré **generator-disko-symfony2** vous pouvez apporter vos modifications :
 
+Pour tester le module en locale :
+> npm link
+
 Pour publier vos modifications sur npm (attention, il vous faut monter la version dans le package.json)
 > npm publish
 
@@ -20,3 +23,9 @@ Si vous avez un problème d'authentification, il vous faut créer un compte npmj
 > npm adduser
 
 Voilà ;)
+
+
+#### PS: Références
+
+https://quickleft.com/blog/creating-and-publishing-a-node-js-module/
+http://yeoman.io/learning/index.html
