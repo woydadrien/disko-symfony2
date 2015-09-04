@@ -1,6 +1,6 @@
 {
-  "name": "disko-symfony2",
-  "version": "1.0.1",
+  "name": "generator-disko-symfony2",
+  "version": "0.0.1",
   "description": "Scaffolds a standard Symfony2 application with Yeoman",
   "license": "MIT",
   "main": "app/index.js",
