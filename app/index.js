@@ -33,13 +33,13 @@ module.exports = yeoman.generators.Base.extend({
   askName: function () {
     var done = this.async();
 
-    this.projectName = 'disko-project';
+    this.projectName = '';
 
     var prompts = [{
       type: 'question',
       name: 'projectName',
       message: 'Quel est le nom de votre  projet ?',
-      default: null
+      default: 'newproject'
     }];
 
     this.prompt(prompts, function(answers) {
@@ -47,6 +47,43 @@ module.exports = yeoman.generators.Base.extend({
       done();
     }.bind(this));
   },
+
+  askDomainName: function () {
+    var done = this.async();
+
+    this.domainName = '';
+
+    var prompts = [{
+      type: 'question',
+      name: 'domainName',
+      message: "Quelle est l'url en local de votre projet ?",
+      default: 'newproject.dev'
+    }];
+
+    this.prompt(prompts, function(answers) {
+      this.domainName = answers.domainName;
+      done();
+    }.bind(this));
+  },
+
+  askIpVagrant: function () {
+    var done = this.async();
+
+    this.ipVagrant = '';
+
+    var prompts = [{
+      type: 'question',
+      name: 'ipVagrant',
+      message: "Quelle est l'ip en local de votre vagrant ? (juste à changer le dernier chiffre entre 102 et 250)",
+      default: '192.168.56.102'
+    }];
+
+    this.prompt(prompts, function(answers) {
+      this.ipVagrant = answers.ipVagrant;
+      done();
+    }.bind(this));
+  },
+
 
   choiceProjectMode: function () {
     var done = this.async();
@@ -128,13 +165,13 @@ module.exports = yeoman.generators.Base.extend({
 
 
   askOptionnalBundle: function() {
-    console.log('');
+    this.log('');
     var done = this.async();
 
     var prompts = [{
       type: 'checkbox',
       name: 'addBundle',
-      message: 'Which bundle would you like to use?',
+      message: 'Quels bundles optionnels voulez-vous utiliser ?',
       choices: [
         {
           name: 'DoctrineFixturesBundle',
@@ -161,6 +198,24 @@ module.exports = yeoman.generators.Base.extend({
   },
 
 
+  vagrantReinstall: function () {
+    var done = this.async();
+
+    this.installVagrant = false;
+
+    var prompts = [{
+      type: 'question',
+      name: 'installVagrant',
+      message: "Voulez vous monter la vagrant automatiquement ?",
+      default: false
+    }];
+
+    this.prompt(prompts, function(answers) {
+      this.installVagrant = answers.installVagrant;
+      done();
+    }.bind(this));
+  },
+
   confirmInstall: function(){
     console.log('');
     var done = this.async();
@@ -174,61 +229,103 @@ module.exports = yeoman.generators.Base.extend({
 
     this.prompt(prompts, function(answers) {
 
-      this.writingConfirm = answers.confirmInstall;
-      this.log('');
-      this.log('');
+      var nb = 0;
+      var maxnb = 10;
 
-      if (this.writingConfirm)
-      {
-        this.log(chalk.green.bold('\n\n\n\n          ======================================= \n '));
-        this.log('                    '+chalk.green.bold('Generation in progress \n'));
-        this.log(chalk.green.bold('          ======================================= \n\n\n\n '));
+      fs.removeSync(this.destinationPath('app/'), allRemoveEnd());
+      fs.removeSync(this.destinationPath('bin/'), allRemoveEnd());
+      fs.removeSync(this.destinationPath('src/'), allRemoveEnd());
+      fs.removeSync(this.destinationPath('web/'), allRemoveEnd());
+      fs.removeSync(this.destinationPath('puphpet/'), allRemoveEnd());
+      fs.removeSync(this.destinationPath('.gitignore'), allRemoveEnd());
+      fs.removeSync(this.destinationPath('package.json'), allRemoveEnd());
+      fs.removeSync(this.destinationPath('composer.json'), allRemoveEnd());
+      fs.removeSync(this.destinationPath('gulpfile.js'), allRemoveEnd());
+      fs.removeSync(this.destinationPath('Vagrantfile'), allRemoveEnd());
 
-
+      function allRemoveEnd(){
+        nb++;
+        if (nb >= maxnb)
+        {
+          done();
+        }
       }
 
-      done();
+      this.writingConfirm = answers.confirmInstall;
+      this.log('');
+
     }.bind(this));
   },
 
 
   writing: {
     App: function () {
+      if (this.writingConfirm)  {
+        this.log('');
+        this.fs.copy(this.templatePath(this.projectMode + '/app'), this.destinationPath('app'));
+        this.fs.copy(this.templatePath(this.projectMode + '/bin'), this.destinationPath('bin'));
+        this.fs.copy(this.templatePath(this.projectMode + '/src'), this.destinationPath('src'));
+        this.fs.copy(this.templatePath(this.projectMode + '/web'), this.destinationPath('web'));
+        this.fs.copy(this.templatePath(this.projectMode + '/puphpet'), this.destinationPath('puphpet'));
 
-      this.log('');
-      this.fs.copy(this.templatePath(this.projectMode + '/app'), this.destinationPath('app'));
-      this.fs.copy(this.templatePath(this.projectMode + '/bin'), this.destinationPath('bin'));
-      this.fs.copy(this.templatePath(this.projectMode + '/src'), this.destinationPath('src'));
-      this.fs.copy(this.templatePath(this.projectMode + '/web'), this.destinationPath('web'));
+        this.template(this.projectMode + '/.gitignore', '.gitignore');
+        this.template(this.projectMode + '/package.json', 'package.json');
+        this.template(this.projectMode + '/composer.json', 'composer.json');
+        this.template(this.projectMode + '/gulpfile.js', 'gulpfile.js');
+        this.template(this.projectMode + '/puphpet/config.yaml', 'puphpet/config.yaml');
+        this.template(this.projectMode + '/Vagrantfile', 'Vagrantfile');
 
-      this.template(this.projectMode + '/.gitignore', '.gitignore');
-      this.template(this.projectMode + '/package.json', 'package.json');
-      this.template(this.projectMode + '/composer.json', 'composer.json');
-      this.template(this.projectMode + '/gulpfile.js', 'gulpfile.js');
-      this.template(this.projectMode + '/.gitignore', '.gitignore');
-
-      this.fs.copy(this.templatePath(this.projectMode + '/editorconfig'),this.destinationPath('.editorconfig'));
-      this.fs.copy(this.templatePath(this.projectMode + '/jshintrc'), this.destinationPath('.jshintrc'));
-      this.log('');
-      this.log('');
+        this.fs.copy(this.templatePath(this.projectMode + '/editorconfig'),this.destinationPath('.editorconfig'));
+        this.fs.copy(this.templatePath(this.projectMode + '/jshintrc'), this.destinationPath('.jshintrc'));
+        this.log('');
+        this.log('');
+      }
     }
   },
 
   end: {
 
+    installVagrant: function(){
+      if (this.installVagrant)  {
+        console.log('');
+        var done = this.async();
+
+        this.log(chalk.cyan('         Install Vagrant...') + chalk.yellow(" (L'opération peut prendre plusieurs minutes)"));
+        child_process.exec('vagrant destroy --force && vagrant up', function (error, stdout, stderr) {
+          if (error != null)
+          {
+            console.log(chalk.red.bold(error));
+            console.log(chalk.red.bold('         Error'));
+          }
+          else{
+            console.log(chalk.green.bold('         Success'));
+          }
+          console.log('');
+          done();
+        });
+      }
+    },
+
     installVendors: function(){
       if (this.writingConfirm)  {
         var done = this.async();
 
-        this.log(chalk.green.bold('Install Vendors...'));
-        child_process.exec('php composer.phar update', function (error, stdout, stderr) {
+        var command = 'cd /var/www && php composer.phar update';
+        if (this.installVagrant)
+        {
+          command = 'vagrant ssh -c "'+command+'"';
+        }
+
+        console.log('');
+        this.log(chalk.cyan('         Install Vendors...'));
+        child_process.exec(command, function (error, stdout, stderr) {
           if (error != null)
           {
             console.log(chalk.red.bold(error));
-            console.log(chalk.red.bold('Error'));
+            console.log(chalk.red.bold('         Error'));
           }
           else{
-            console.log(chalk.green.bold('Success'));
+            console.log(chalk.green.bold('         Success'));
           }
           console.log('');
           done();
@@ -237,17 +334,32 @@ module.exports = yeoman.generators.Base.extend({
     },
 
     fixturesBundle: function(){
+      var diskoProcess = this;
       if (this.writingConfirm)  {
         var done = this.async();
         if (this.fixturebundle) {
-          this.log(chalk.green.bold('Add & Install : doctrine/doctrine-fixtures-bundle...'));
-          child_process.exec('php composer.phar require doctrine/doctrine-fixtures-bundle', function (error, stdout, stderr) {
+
+
+          var command = 'cd /var/www && php composer.phar require doctrine/doctrine-fixtures-bundle';
+          if (this.installVagrant)
+          {
+            command = 'vagrant ssh -c "'+command+'"';
+          }
+
+          this.log(chalk.cyan('         Add & Install : doctrine/doctrine-fixtures-bundle...'));
+          child_process.exec(command, function (error, stdout, stderr) {
             if (error != null)
             {
-              console.log(chalk.red.bold('Error'));
+              console.log(chalk.red.bold('         Error'));
             }
             else{
-              console.log(chalk.green.bold('Success'));
+
+
+              var appKernelContents = diskoProcess.readFileAsString('app/AppKernel.php');
+              var newAppKernelContents = appKernelContents.replace('##Yeoman', '        $bundles[] = new Doctrine\\Bundle\\FixturesBundle\\DoctrineFixturesBundle();\n##Yeoman');
+              fs.writeFileSync('app/AppKernel.php', newAppKernelContents);
+
+              console.log(chalk.green.bold('         Success'));
             }
             console.log('');
             done();
@@ -261,17 +373,30 @@ module.exports = yeoman.generators.Base.extend({
     },
 
     migrationBundle: function(){
+      var diskoProcess = this;
       if (this.writingConfirm)  {
         var done = this.async();
         if (this.migrationbundle) {
-          this.log(chalk.green.bold('Add & Install : doctrine/doctrine-migrations-bundle...'));
-          child_process.exec('php composer.phar require doctrine/doctrine-migrations-bundle', function (error, stdout, stderr) {
+
+
+          var command = 'cd /var/www && php composer.phar require doctrine/doctrine-migrations-bundle';
+          if (this.installVagrant)
+          {
+            command = 'vagrant ssh -c "'+command+'"';
+          }
+
+          this.log(chalk.cyan('         Add & Install : doctrine/doctrine-migrations-bundle...'));
+          child_process.exec(command, function (error, stdout, stderr) {
             if (error != null)
             {
-              console.log(chalk.red.bold('Error'));
+              console.log(chalk.red.bold('         Error'));
             }
             else{
-              console.log(chalk.green.bold('Success'));
+              var appKernelContents = diskoProcess.readFileAsString('app/AppKernel.php');
+              var newAppKernelContents = appKernelContents.replace('##Yeoman', '        $bundles[] = new Doctrine\\Bundle\\MigrationsBundle\\DoctrineMigrationsBundle();\n##Yeoman');
+              fs.writeFileSync('app/AppKernel.php', newAppKernelContents);
+
+              console.log(chalk.green.bold('         Success'));
             }
             console.log('');
             done();
@@ -285,16 +410,65 @@ module.exports = yeoman.generators.Base.extend({
     },
 
 
+    binInstall: function(){
+      if (this.writingConfirm)  {
+
+        var done = this.async();
+        if (this.installVagrant) {
+
+
+          var command = 'cd /var/www && sh bin/install';
+          command = 'vagrant ssh -c "'+command+'"';
+
+          this.log(chalk.cyan('         Install Project on vagrant'));
+          child_process.exec(command, function (error, stdout, stderr) {
+            if (error != null)
+            {
+              console.log(chalk.red.bold('         Error'));
+            }
+            else{
+              console.log(chalk.green.bold('         Success'));
+            }
+            console.log('');
+            done();
+          });
+        }
+        else
+        {
+          done();
+        }
+      }
+    },
+
     finish: function(){
       if (this.writingConfirm)  {
-        this.log(chalk.green.bold('\n\n\n\n          ======================================= \n '));
-        this.log('                    '+chalk.green.bold('Generation Successfull \n'));
-        this.log(chalk.green.bold('          ======================================= \n\n\n\n '));
+
+        var appKernelContents = this.readFileAsString('app/AppKernel.php');
+        var newAppKernelContents = appKernelContents.replace('##Yeoman', '');
+        fs.writeFileSync('app/AppKernel.php', newAppKernelContents);
+
+        this.log('\n\n\n                    '+chalk.green.bold('Generation Successfull'));
+        this.log('                    '+chalk.green('-----------------------\n'));
+
+
+        this.log(chalk.magenta.bold('         Ajoutez cette ligne dans votre /etc/hosts :'));
+        this.log(chalk.magenta('         '+this.ipVagrant+' '+this.domainName));
+        this.log('');
+
+        if(!this.installVagrant)
+        {
+          this.log(chalk.magenta.bold('         Pour monter votre vagrant :'));
+          this.log(chalk.magenta('         vagrant destroy '));
+          this.log(chalk.magenta('         vagrant up'));
+          this.log('');
+          this.log(chalk.magenta.bold('         Pour installer le projet :'));
+          this.log(chalk.magenta('         vagrant ssh '));
+          this.log(chalk.magenta('         cd /var/www\ '));
+          this.log(chalk.magenta('         sh bin/install\n\n\n\n '));
+        }
       }
       else{
-        this.log(chalk.red.bold('\n\n\n\n          ======================================= \n '));
         this.log('                    '+chalk.red.bold('Generation Canceled \n'));
-        this.log(chalk.red.bold('          ======================================= \n\n\n\n '));
       }
     }
   }

@@ -4,16 +4,14 @@
 parameters:
     database_host:     127.0.0.1
     database_port:     ~
-    database_name:     symfony
+    database_name:     disko
     database_user:     root
-    database_password: ~
-    # You should uncomment this if you want use pdo_sqlite
-    # database_path: "%kernel.root_dir%/data.db3"
+    database_password: root
 
-    mailer_transport:  smtp
-    mailer_host:       127.0.0.1
-    mailer_user:       ~
+    mailer_transport:  gmail
+    mailer_host:       smtp.gmail
+    mailer_user:       adrien.j@disko.fr
     mailer_password:   ~
+    mailer_delivery_address: adrien.j@disko.fr
 
-    # A secret key that's used to generate certain security-related tokens
-    secret:            ThisTokenIsNotSoSecretChangeIt
+    secret:            Jz(zdcD3e+ceemz$cù
