@@ -1,0 +1,27 @@
+default:
+    formatter:
+      name: pretty
+    paths:
+      features: features
+      bootstrap: %behat.paths.base%/bootstrap
+    extensions:
+      VIPSoft\DoctrineDataFixturesExtension\Extension:
+        lifetime:    feature
+        autoload:    true
+        directories: ~
+        fixtures:    ~
+      Behat\Symfony2Extension\Extension:
+        mink_driver: true
+        bundle: BehatBundle
+        kernel:
+          path: app/AppKernel.php
+          class: AppKernel
+          env: test
+          debug: true
+      Behat\MinkExtension\Extension:
+        base_url: http://<%= domainName %>/app_test.php
+        default_session: symfony2
+        javascript_session: selenium2
+        browser_name: firefox
+        selenium2: ~
+        show_cmd: firefox

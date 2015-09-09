@@ -19,11 +19,17 @@ class AppKernel extends Kernel
 
             new FOS\UserBundle\FOSUserBundle(),
             new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
+            new Knp\Bundle\PaginatorBundle\KnpPaginatorBundle(),
+            new WhiteOctober\BreadcrumbsBundle\WhiteOctoberBreadcrumbsBundle(),
+            new Lexik\Bundle\MaintenanceBundle\LexikMaintenanceBundle(),
+            new Liip\ImagineBundle\LiipImagineBundle(),
+
+            new Disko\CoreBundle\CoreBundle(),
+            new Disko\BehatBundle\BehatBundle(),
+            new Disko\UserBundle\UserBundle(),
         );
 
 ##Yeoman
-
-        $bundles[] = new Disko\UserBundle\UserBundle();
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
             $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();

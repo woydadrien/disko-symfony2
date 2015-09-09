@@ -1,0 +1,41 @@
+{% extends "FrontBundle::layout.html.twig" %}
+
+{% trans_default_domain 'FOSUserBundle' %}
+
+{% block title %}
+    Connexion
+{% endblock %}
+
+{% block fos_user_content %}
+            <form style="margin: auto; margin-top: 15%; width: 500px; background: #e5e5e5; border: 15px solid #afd9ee; padding: 15px; font-size: 13px; font-family: 'trebuchet ms', verdana, arial;" action="{{ path("fos_user_security_check") }}" method="post" novalidate>
+
+
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
+
+                    {% if error %}
+                        <div class="form-group has-error has-feedback" style="text-align: center;margin-bottom: 0px; color: red;">
+                            <p class="text-danger">
+                                L'association du compte / mot de passe ne correspond pas
+                            </p>
+                        </div>
+                    {% endif %}
+
+                    <p>
+                        <label style="width: 200px; display: inline-block;" for="username" class="col-sm-4 control-label">Login</label>
+                        <input style="width: 250px;padding: 5px;"  type="text" class="form-control" id="username" name="_username" value="{{ last_username }}" placeholder="Login" required="required" />
+                    </p>
+                    <p>
+                        <label style="width: 200px; display: inline-block;" for="password" class="col-sm-4 control-label">Mot de passe</label>
+                        <input style="width: 250px;padding: 5px;"  type="password" class="form-control" id="password" name="_password" required="required" placeholder="Mot de passe"/>
+                    </p>
+                    <p>
+                        <label>
+                            <input type="checkbox" id="remember_me" name="_remember_me" value="on" /> <label style="display: inline-block;  vertical-align: bottom;" for="remember_me">Se souvenir de moi</label>
+                        </label>
+                    </p>
+                    <p style="text-align: center">
+                        <button style="padding: 15px; cursor: pointer; background: #3baae3; color: whitesmoke; font-weight: bold; border: none;" type="submit" class="btn btn-default">Connexion</button>
+                    </p>
+            </form>
+
+{% endblock fos_user_content %}

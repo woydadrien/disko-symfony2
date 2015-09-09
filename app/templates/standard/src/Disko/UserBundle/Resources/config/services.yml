@@ -1,0 +1,31 @@
+parameters:
+
+    # Services Class
+    dk.user.class:                 Disko\UserBundle\Services\UserService
+    dk.localisation.class:         Disko\UserBundle\Services\LocalisationService
+
+    # Entities Class
+    dk.entity.user.class:          Disko\UserBundle\Entity\User
+    dk.entity.localisation.class:  Disko\UserBundle\Entity\Localisation
+
+    dk.user.authentication.handler.success.class: Disko\UserBundle\Security\LoginSuccessHandler
+
+services:
+    dk.user.authentication.handler.success:
+        class: %dk.user.authentication.handler.success.class%
+        arguments: ["@router", "@security.context"]
+        tags:
+            - { name: monolog.logger, channel: security }
+
+    dk.user:
+        class: %dk.user.class%
+        calls:
+            - [ setEntityManager, [ "@doctrine.orm.entity_manager" ] ]
+            - [ addRepository, [ userRepository, %dk.entity.user.class% ] ]
+            - [ addService, [ userManager, "@fos_user.user_manager"  ] ]
+
+    dk.localisation:
+        class: %dk.localisation.class%
+        calls:
+            - [ setEntityManager, [ "@doctrine.orm.entity_manager" ] ]
+            - [ addRepository, [ localisationRepository, %dk.entity.localisation.class% ] ]

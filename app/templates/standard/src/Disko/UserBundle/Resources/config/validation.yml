@@ -1,0 +1,111 @@
+Disko\UserBundle\Entity\User:
+    constraints:
+        - Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity: email
+    properties:
+        civility:
+            - NotBlank:
+                message: "form.general.required"
+                groups: [Admin, Registration, Profile]
+
+        firstName:
+            - NotBlank:
+                message: "form.general.required"
+                groups: [Admin, Registration, Profile]
+
+            - Length:
+                min: 2
+                max: 255
+                minMessage: "form.general.short"
+                maxMessage: "form.general.long"
+                groups: [Admin, Registration, Profile]
+
+        lastName:
+            - NotBlank:
+                message: "form.general.required"
+                groups: [Admin, Registration, Profile]
+
+            - Length:
+                min: 2
+                max: 255
+                minMessage: "form.general.short"
+                maxMessage: "form.general.long"
+                groups: [Admin, Registration, Profile]
+
+        birthday:
+            - NotBlank:
+                message: "form.general.required"
+                groups: [Admin, Registration, Profile]
+
+            - DateTime:
+                message: "form.general.invalid.date"
+                groups: [Admin, Registration, Profile]
+
+        email:
+            - NotBlank:
+                message: "form.general.required"
+                groups: [Admin, Registration, Profile]
+
+            - Email:
+                message: "{{ value }} is invalid."
+                checkMX: true
+                groups: [Admin, Registration, Profile]
+
+        localisations:
+            - Valid: ~
+
+Disko\UserBundle\Entity\Localisation:
+    properties:
+        title:
+            - NotBlank:
+                message: "form.general.required"
+            - Length:
+                min: 1
+                max: 255
+                minMessage: "form.general.short"
+                maxMessage: "form.general.long"
+        address:
+            - NotBlank:
+                message: "form.general.required"
+            - Length:
+                min: 1
+                max: 255
+                minMessage: "form.general.short"
+                maxMessage: "form.general.long"
+
+        addressMore:
+            - Length:
+                min: 1
+                max: 255
+                minMessage: "form.general.short"
+                maxMessage: "form.general.long"
+
+
+        code:
+            - NotBlank:
+                message: "form.general.required"
+            - Length:
+                min: 1
+                max: 20
+                minMessage: "form.general.short"
+                maxMessage: "form.general.long"
+
+        country:
+            - NotBlank:
+                message: "form.general.required"
+
+        phone:
+            - NotBlank:
+                message: "form.general.required"
+            - Length:
+                min: 1
+                max: 255
+                minMessage: "form.general.short"
+                maxMessage: "form.general.long"
+        city:
+            - NotBlank:
+                message: "form.general.required"
+            - Length:
+                min: 1
+                max: 255
+                minMessage: "form.general.short"
+                maxMessage: "form.general.long"

@@ -1,0 +1,197 @@
+<?php
+
+/**
+ * Repository
+ *
+ * @author Adrien Jerphagnon <adrien.j@disko.fr>
+ */
+
+namespace Disko\CoreBundle\Repository;
+
+use Doctrine\ORM\EntityRepository,
+    Doctrine\ORM\EntityManager,
+    Doctrine\ORM\Mapping\ClassMetadata,
+    Doctrine\ORM\Query,
+    Disko\CoreBundle\Exception\ExistingObjectException,
+    Disko\CoreBundle\Exception\NonExistingObjectException;
+
+/**
+ * This class import all generic methods of repository class type
+ */
+class BaseRepository extends EntityRepository
+{
+    /** PDO Exception Unique violation*/
+    const PDO_EXCEPTION_UNIQUE_VIOLATION = '23505';
+
+    /** PDO Exception Integrity constraint violation */
+    const PDO_EXCEPTION_INTEGRITY_CONSTRAINT_VIOLATION = '23000';
+
+    /**
+     * Finds an entity by the identifier(s)
+     *
+     * @param Entity $entity The entity to find
+     *
+     * @return Entity The entity
+     */
+    public function findById($entity)
+    {
+        /* Gets the identifiers */
+        $classMetadata = $this->_em->getClassMetadata(get_class($entity));
+        $identifiersNames = $classMetadata->getIdentifier();
+        /* if there's only one id, got to pass it outside an array */
+        $identenfiers = array();
+        if (1 == count($identifiersNames)) {
+            $identenfiers =
+                    $classMetadata->getFieldValue($entity, $identifiersNames[0]);
+        } else {
+            foreach ($identifiersNames as $identifierName) {
+                array_push($identenfiers, $classMetadata->getFieldValue($entity, $identifierName));
+            }
+        }
+
+        return $this->_em->find(get_class($entity), $identenfiers);
+    }
+
+    /**
+     * Inserts an entity
+     *
+     * @param Entity $entity The entity to insert
+     *
+     * @throws ExistingObjectException An ExistingObjectException if the entity already
+     *                                 exists
+     * @throws PDOException            PDO Exception
+     */
+    public function insert($entity)
+    {
+        try {
+            $this->_em->persist($entity);
+            $this->_em->flush($entity);
+        } catch (\PDOException $pdoe) {
+            switch ($pdoe->getCode()) {
+                case self::PDO_EXCEPTION_INTEGRITY_CONSTRAINT_VIOLATION:
+                case self::PDO_EXCEPTION_UNIQUE_VIOLATION:
+                    throw new ExistingObjectException(array('object' => $entity));
+                default:
+                    throw $pdoe;
+            }
+        }
+
+        return $entity;
+    }
+
+    /**
+     * Updates an entity
+     *
+     * @param Entity $entity The entity to update
+     *
+     * @throws NonExistingObjectException An NonExistingObjectException if the entity does
+     *                                    not exist
+     * @throws ExistingObjectException    An ExistingObjectException if the
+     *                                    entity is already exist in database
+     */
+    public function update($entity)
+    {
+        $entity = $this->findById($entity);
+        if (is_null($entity)) {
+            throw new NonExistingObjectException(array('object' => $entity));
+        }
+
+        try {
+            $this->_em->flush($entity);
+        } catch (\PDOException $pdoe) {
+            switch ($pdoe->getCode()) {
+                case self::PDO_EXCEPTION_INTEGRITY_CONSTRAINT_VIOLATION:
+                case self::PDO_EXCEPTION_UNIQUE_VIOLATION:
+                    throw new ExistingObjectException(array('object' => $entity));
+                default:
+                    throw $pdoe;
+            }
+        }
+    }
+
+
+    /**
+     * Removes an entity
+     *
+     * @param Entity $entity The entity to remove
+     *
+     * @throws NonExistingObjectException An NonExistingObjectException if the entity does
+     *                                    not exist
+     */
+    public function delete($entity)
+    {
+        $this->_em->remove($entity);
+        $this->_em->flush();
+    }
+
+    /**
+     * Save an entity
+     *
+     * @param Entity $entity An entity that i want saved
+     *
+     * @return void
+     */
+    public function save($entity)
+    {
+        $this->_em->persist($entity);
+        $this->_em->flush();
+
+        return $entity;
+    }
+
+    /**
+     * Find all in query
+     *
+     * @param array $parameters Parameters
+     *
+     * @return QueryBuilder
+     */
+    public function queryFindAll($parameters = array())
+    {
+        $qb = $this->createQueryBuilder('e')
+                   ->select();
+
+        foreach ($parameters as $parameter => $value) {
+            $qb->andWhere('e.'.$parameter.' = '.$value);
+        }
+
+        return $qb;
+    }
+
+    /**
+     * Find in query
+     *
+     * @param array $criteria Criteria
+     *
+     * @return QueryBuilder
+     */
+    public function queryFind(array $parameters, $alias = 'e')
+    {
+        $qb = $this->createQueryBuilder($alias);
+
+        $parameters = array_filter($parameters, function ($v) { return !is_null($v); });
+        foreach ($parameters as $key => $value) {
+            if (is_object($value) || is_numeric($value) || is_integer($value)) {
+                $qb->andWhere($alias.'.'.$key.' = :'.$key)
+                    ->setParameter($key, $value);
+            } else {
+                $qb->andWhere($qb->expr()->like($alias.'.'.$key, ':'.$key))
+                    ->setParameter($key, '%'.$value.'%');
+            }
+        }
+
+        return $qb;
+    }
+
+    /**
+     * Find all
+     *
+     * @param array $parameters Parameters
+     *
+     * @return Collection
+     */
+    public function findAll($parameters = array())
+    {
+        return $this->queryFindAll($parameters)->getQuery()->getResult();
+    }
+}

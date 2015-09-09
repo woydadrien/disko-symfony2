@@ -230,7 +230,7 @@ module.exports = yeoman.generators.Base.extend({
     this.prompt(prompts, function(answers) {
 
       var nb = 0;
-      var maxnb = 10;
+      var maxnb = 11;
 
       fs.removeSync(this.destinationPath('app/'), allRemoveEnd());
       fs.removeSync(this.destinationPath('bin/'), allRemoveEnd());
@@ -242,6 +242,7 @@ module.exports = yeoman.generators.Base.extend({
       fs.removeSync(this.destinationPath('composer.json'), allRemoveEnd());
       fs.removeSync(this.destinationPath('gulpfile.js'), allRemoveEnd());
       fs.removeSync(this.destinationPath('Vagrantfile'), allRemoveEnd());
+      fs.removeSync(this.destinationPath('src/Disko/BehatBundle/behat.yml'), allRemoveEnd());
 
       function allRemoveEnd(){
         nb++;
@@ -268,6 +269,8 @@ module.exports = yeoman.generators.Base.extend({
         this.fs.copy(this.templatePath(this.projectMode + '/web'), this.destinationPath('web'));
         this.fs.copy(this.templatePath(this.projectMode + '/puphpet'), this.destinationPath('puphpet'));
 
+
+        this.template(this.projectMode + '/src/Disko/BehatBundle/behat.yml', 'src/Disko/BehatBundle/behat.yml');
         this.template(this.projectMode + '/.gitignore', '.gitignore');
         this.template(this.projectMode + '/package.json', 'package.json');
         this.template(this.projectMode + '/composer.json', 'composer.json');
@@ -310,10 +313,10 @@ module.exports = yeoman.generators.Base.extend({
       if (this.writingConfirm)  {
         var done = this.async();
 
-        var command = 'cd /var/www && php composer.phar update';
+        var command = 'php composer.phar update';
         if (this.installVagrant)
         {
-          command = 'vagrant ssh -c "'+command+'"';
+          command = 'vagrant ssh -c "cd /var/www && '+command+'"';
         }
 
         console.log('');
@@ -340,10 +343,10 @@ module.exports = yeoman.generators.Base.extend({
         if (this.fixturebundle) {
 
 
-          var command = 'cd /var/www && php composer.phar require doctrine/doctrine-fixtures-bundle';
+          var command = 'php composer.phar require doctrine/doctrine-fixtures-bundle';
           if (this.installVagrant)
           {
-            command = 'vagrant ssh -c "'+command+'"';
+            command = 'vagrant ssh -c "cd /var/www && '+command+'"';
           }
 
           this.log(chalk.cyan('         Add & Install : doctrine/doctrine-fixtures-bundle...'));
@@ -379,10 +382,10 @@ module.exports = yeoman.generators.Base.extend({
         if (this.migrationbundle) {
 
 
-          var command = 'cd /var/www && php composer.phar require doctrine/doctrine-migrations-bundle';
+          var command = 'php composer.phar require doctrine/doctrine-migrations-bundle';
           if (this.installVagrant)
           {
-            command = 'vagrant ssh -c "'+command+'"';
+            command = 'vagrant ssh -c "cd /var/www && '+command+'"';
           }
 
           this.log(chalk.cyan('         Add & Install : doctrine/doctrine-migrations-bundle...'));

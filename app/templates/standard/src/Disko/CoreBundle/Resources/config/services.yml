@@ -1,0 +1,30 @@
+parameters:
+    # Services Class
+    core.cache.class:                Disko\CoreBundle\Services\CacheService
+    core.mail.class:                 Disko\CoreBundle\Services\MailService
+    core.date.class:                 Disko\CoreBundle\Services\DateService
+    core.geo.class:                  Disko\CoreBundle\Services\GeoService
+    core.context.class:              Disko\CoreBundle\Services\ContextService
+
+services:
+    core.cache:
+        class: %core.cache.class%
+        calls:
+            - [ setEntityManager, [ "@doctrine.orm.entity_manager" ] ]
+            - [ addService, [ cache, "%core.cache%" ] ]
+    core.mail:
+        class: %core.mail.class%
+        calls:
+            - [ addService, [ twig, "@twig" ] ]
+            - [ addService, [ mailer, "@mailer" ] ]
+    core.date:
+        class: %core.date.class%
+        calls:
+            - [ setEntityManager, [ "@doctrine.orm.entity_manager" ] ]
+    core.geo:
+        class: %core.geo.class%
+    core.context:
+        class: %core.context.class%
+        calls:
+            - [ addService, [ device, "%core.device%" ] ]
+            - [ addService, [ securityContext, "@security.context" ] ]
